@@ -43,6 +43,14 @@ app.get('/allbooks', async(req, res)=>{
     const result = await allbooks.find().toArray();
     res.send(result);
 })
+app.get('/mybooks/:email', async (req, res) => {
+    const { email } = req.params;
+    
+
+    const allbooks = BooksphareDB.collection('allbooks');
+    const result = await allbooks.find({ email }).toArray();
+    res.send(result);
+  });
 
 
 app.post('/allbooks', async(req, res)=>{
