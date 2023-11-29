@@ -51,14 +51,7 @@ app.post('/allbooks', async(req, res)=>{
     res.send(result);
 
 })
-app.delete('/book/:id', async(req, res)=>{
-    const id = req.params.id;
-    const allbooks = BooksphareDB.collection("allbooks");
-   
-    const query = {_id: new ObjectId(id)}
-    const result = await allbooks.deleteOne(query);
-    res.send(result);
-})
+
 
 app.get('/book/:id', async (req, res) => {
     const allbooks = BooksphareDB.collection("allbooks");
@@ -76,6 +69,39 @@ app.get('/book/:id', async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   });
+  app.delete('/book/:id', async(req, res)=>{
+    const id = req.params.id;
+    const allbooks = BooksphareDB.collection("allbooks");
+   
+    const query = {_id: new ObjectId(id)}
+    const result = await allbooks.deleteOne(query);
+    res.send(result);
+})
+app.put('/book/:id', async(req, res)=>{
+    const id = req.params.id;
+    
+    const allbooks = BooksphareDB.collection("allbooks");
+   
+    const query = {_id: new ObjectId(id)}
+    
+    const options ={upsert: true};
+
+    const updatedBook = req.body
+   const newBook= {
+        $set: {
+            email:updatedBook.email,
+            title: updatedBook.title,
+            author:updatedBook.author,
+            genre:updatedBook.genre,
+            publication:updatedBook.publication,
+            description:updatedBook.description,
+            rating:updatedBook.rating,
+            image:updatedBook.image
+        }
+    }
+    const result = await allbooks.updateOne(query, newBook,options);
+    res.send(result);
+})
 
 app.listen(port, ()=>{
     console.log(`App is running in the port ${port}`)
