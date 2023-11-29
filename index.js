@@ -44,6 +44,22 @@ app.get('/allbooks', async(req, res)=>{
     res.send(result);
 })
 
+
+app.post('/allbooks', async(req, res)=>{
+    const allbooks = BooksphareDB.collection("allbooks");
+    const result = await allbooks.insertOne(req.body);
+    res.send(result);
+
+})
+app.delete('/book/:id', async(req, res)=>{
+    const id = req.params.id;
+    const allbooks = BooksphareDB.collection("allbooks");
+   
+    const query = {_id: new ObjectId(id)}
+    const result = await allbooks.deleteOne(query);
+    res.send(result);
+})
+
 app.get('/book/:id', async (req, res) => {
     const allbooks = BooksphareDB.collection("allbooks");
     const id = req.params.id;
