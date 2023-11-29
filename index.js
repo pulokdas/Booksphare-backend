@@ -1,13 +1,15 @@
 const express = require('express');
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
+const { ObjectId } = require('mongodb');
 require('dotenv').config();
 app.use(cors());
 app.use((express.json()));
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+
 const uri = `mongodb+srv://${process.env.user}:${process.env.user_pass}@cluster0.8cinysu.mongodb.net/?retryWrites=true&w=majority`;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -17,6 +19,7 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
+const BooksphareDB = client.db("BooksphareDB");
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -36,8 +39,27 @@ app.get('/', (req , res)=>{
     res.send('server running')
 })
 app.get('/allbooks', async(req, res)=>{
-
+    const allbooks = BooksphareDB.collection("allbooks");
+    const result = await allbooks.find().toArray();
+    res.send(result);
 })
+
+app.get('/book/:id', async (req, res) => {
+    const allbooks = BooksphareDB.collection("allbooks");
+    const id = req.params.id;
+  
+    try {
+      const result = await allbooks.findOne({ _id: new ObjectId(id) });
+  
+      if (!result) {
+        res.status(404).json({ error: 'Book not found' });
+      } else {
+        res.json(result);
+      }
+    } catch (error) {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
 
 app.listen(port, ()=>{
     console.log(`App is running in the port ${port}`)
